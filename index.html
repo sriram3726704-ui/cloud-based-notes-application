@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudNotes - Cloud-Based Realtime Notes App</title>
+  <meta name="description" content="A clean, modern cloud-based notes app powered by Firebase Firestore. Add, view, edit, pin, and organize notes with instant cloud synchronization.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= App Header ================= -->
+  <header class="app-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo -->
+      <div class="logo-wrapper" id="brandLogoBtn" title="CloudNotes Realtime">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>CloudNotes</h1>
+          <span class="logo-badge" id="storageBadge">Firestore Cloud</span>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search notes by title or content..." 
+          autocomplete="off"
+        >
+        <button id="searchClearBtn" class="search-clear-btn" title="Clear search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- Cloud Status Pill -->
+        <button id="cloudStatusBtn" class="cloud-status" title="View Cloud Connection Status">
+          <span class="status-dot connected" id="cloudStatusDot"></span>
+          <span id="cloudStatusText">Connecting...</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode">
+          <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+
+        <!-- Firebase Config Settings Button -->
+        <button id="openSettingsBtn" class="icon-btn" title="Configure Firebase Connection" aria-label="Configure Firebase">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+
+        <!-- New Note Button -->
+        <button id="openNewNoteModalBtn" class="btn-primary" title="Create a new note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Note</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Main Content Container ================= -->
+  <main class="main-content">
+
+    <!-- Firebase Connection Prompt Banner (if not yet configured) -->
+    <div id="firebaseNoticeBanner" class="cloud-banner" style="display: none;">
+      <div class="cloud-banner-content">
+        <div class="cloud-banner-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+        </div>
+        <div class="cloud-banner-text">
+          <h3>Connect Your Firebase Firestore</h3>
+          <p>You are currently in <strong>Demo Mode</strong>. Connect your Firebase project to save notes permanently to the cloud across all your devices!</p>
+        </div>
+      </div>
+      <div class="cloud-banner-actions">
+        <button id="bannerConnectBtn" class="btn-banner-connect">Connect Firebase</button>
+        <button id="bannerDismissBtn" class="btn-banner-dismiss">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Quick Note Bar (Fast creation) -->
+    <div class="quick-note-container">
+      <div id="quickNoteCard" class="quick-note-card">
+        <!-- Collapsed state -->
+        <div id="quickNoteCollapsed" class="quick-note-collapsed">
+          <span class="quick-note-placeholder">Take a quick note...</span>
+          <div class="quick-note-icons">
+            <span title="New note">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Expanded state -->
+        <form id="quickNoteExpanded" class="quick-note-expanded">
+          <input 
+            type="text" 
+            id="quickNoteTitle" 
+            class="quick-note-title-input" 
+            placeholder="Title" 
+            autocomplete="off"
+          >
+          <textarea 
+            id="quickNoteBody" 
+            class="quick-note-body-input" 
+            placeholder="Take a note..." 
+            rows="3"
+            required
+          ></textarea>
+
+          <div class="quick-note-footer">
+            <div class="quick-note-options">
+              <!-- Category dropdown -->
+              <select id="quickNoteCategory" class="category-select-pill" title="Select Category">
+                <option value="General">General</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Ideas">Ideas</option>
+                <option value="Tasks">Tasks</option>
+                <option value="Study">Study</option>
+              </select>
+
+              <!-- Color choices -->
+              <div class="color-dots-picker" id="quickColorPicker">
+                <span class="color-dot-choice selected" data-color="default" style="background:#ffffff; border:1px solid #cbd5e1;" title="Default"></span>
+                <span class="color-dot-choice" data-color="coral" style="background:#fecdd3;" title="Coral"></span>
+                <span class="color-dot-choice" data-color="amber" style="background:#fef08a;" title="Amber"></span>
+                <span class="color-dot-choice" data-color="emerald" style="background:#bbf7d0;" title="Emerald"></span>
+                <span class="color-dot-choice" data-color="sky" style="background:#bae6fd;" title="Sky"></span>
+                <span class="color-dot-choice" data-color="purple" style="background:#e9d5ff;" title="Purple"></span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button type="button" id="quickNoteCancelBtn" class="btn-secondary" style="padding:0.4rem 0.85rem; font-size:0.82rem;">Cancel</button>
+              <button type="submit" class="quick-note-submit-btn">Save Note</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Filter & Sort Bar -->
+    <div class="filter-bar">
+      <!-- Category Filter Pills -->
+      <div class="category-pills" id="categoryFilterContainer">
+        <button class="cat-pill active" data-category="all">
+          <span>All Notes</span>
+          <span class="cat-count" id="countAll">0</span>
+        </button>
+        <button class="cat-pill" data-category="General">
+          <span>General</span>
+          <span class="cat-count" id="countGeneral">0</span>
+        </button>
+        <button class="cat-pill" data-category="Work">
+          <span>Work</span>
+          <span class="cat-count" id="countWork">0</span>
+        </button>
+        <button class="cat-pill" data-category="Personal">
+          <span>Personal</span>
+          <span class="cat-count" id="countPersonal">0</span>
+        </button>
+        <button class="cat-pill" data-category="Ideas">
+          <span>Ideas</span>
+          <span class="cat-count" id="countIdeas">0</span>
+        </button>
+        <button class="cat-pill" data-category="Tasks">
+          <span>Tasks</span>
+          <span class="cat-count" id="countTasks">0</span>
+        </button>
+        <button class="cat-pill" data-category="Study">
+          <span>Study</span>
+          <span class="cat-count" id="countStudy">0</span>
+        </button>
+      </div>
+
+      <!-- Sort Controls -->
+      <div class="sort-controls">
+        <span class="sort-label">Sort by:</span>
+        <select id="sortSelect" class="sort-select">
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Pinned Notes Section (Conditional) -->
+    <section id="pinnedNotesSection" class="notes-section" style="display: none;">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-primary);">
+          <line x1="12" y1="17" x2="12" y2="22"></line>
+          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+        </svg>
+        <h2 class="section-title">Pinned Notes</h2>
+        <span class="section-badge" id="pinnedCountBadge">0</span>
+      </div>
+      <div id="pinnedNotesGrid" class="notes-grid"></div>
+    </section>
+
+    <!-- Other / All Notes Section -->
+    <section class="notes-section">
+      <div class="section-header" id="allNotesHeader" style="display: none;">
+        <h2 class="section-title">All Notes</h2>
+        <span class="section-badge" id="otherCountBadge">0</span>
+      </div>
+      <div id="notesGrid" class="notes-grid"></div>
+    </section>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <h3 id="emptyStateTitle">No notes yet</h3>
+      <p id="emptyStateDesc">Capture your thoughts, ideas, tasks, or meeting summaries. They sync automatically to the cloud.</p>
+      <button id="emptyStateCreateBtn" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Create First Note</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ================= Note Editor Modal (Create / Edit) ================= -->
+  <div id="noteModalBackdrop" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="noteModalTitle">Create Note</h3>
+        <button id="noteModalCloseBtn" class="modal-close-btn" title="Close (Esc)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="noteForm">
+        <div class="modal-body">
+          <input type="hidden" id="noteFormId">
+
+          <!-- Title Input -->
+          <div class="form-group">
+            <label class="form-label" for="modalNoteTitle">Note Title</label>
+            <input 
+              type="text" 
+              id="modalNoteTitle" 
+              class="form-input" 
+              placeholder="e.g., Project brainstorm or Grocery list" 
+              autocomplete="off"
+            >
+          </div>
+
+          <!-- Category & Pin Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="modalNoteCategory">Category</label>
+              <select id="modalNoteCategory" class="form-input">
+                <option value="General">General</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Ideas">Ideas</option>
+                <option value="Tasks">Tasks</option>
+                <option value="Study">Study</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="justify-content: flex-end;">
+              <label class="form-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding-bottom: 0.6rem;">
+                <input type="checkbox" id="modalNotePinned" style="width:18px; height:18px; accent-color:var(--accent-primary); cursor:pointer;">
+                <span>Pin note to top</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Content Textarea -->
+          <div class="form-group">
+            <label class="form-label" for="modalNoteContent">Content</label>
+            <textarea 
+              id="modalNoteContent" 
+              class="form-input form-textarea" 
+              placeholder="Write your note here..." 
+              required
+            ></textarea>
+          </div>
+
+          <!-- Color Accent Picker -->
+          <div class="form-group">
+            <label class="form-label">Note Color Accent</label>
+            <div class="color-picker-row" id="modalColorPicker">
+              <div class="color-radio active" data-color="default" style="background:#ffffff; border:1px solid #cbd5e1;" title="Default White"></div>
+              <div class="color-radio" data-color="coral" style="background:#fecdd3;" title="Coral"></div>
+              <div class="color-radio" data-color="amber" style="background:#fef08a;" title="Amber"></div>
+              <div class="color-radio" data-color="emerald" style="background:#bbf7d0;" title="Emerald"></div>
+              <div class="color-radio" data-color="sky" style="background:#bae6fd;" title="Sky"></div>
+              <div class="color-radio" data-color="purple" style="background:#e9d5ff;" title="Purple"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="modalCancelBtn" class="btn-secondary">Cancel</button>
+          <button type="submit" id="modalSaveBtn" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span id="modalSaveBtnText">Save to Cloud</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= Firebase Settings Modal ================= -->
+  <div id="settingsModalBackdrop" class="modal-backdrop">
+    <div class="modal-card settings-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Firebase Cloud Setup</h3>
+        <button id="settingsModalCloseBtn" class="modal-close-btn" title="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="settings-info-box">
+          <strong>Cloud Storage with Firebase Firestore:</strong><br>
+          Configure your Firebase credentials below to enable real-time cloud synchronization. Your notes will be safely stored in Firestore and update across all your devices in real-time.
+        </div>
+
+        <!-- Settings Tabs -->
+        <div class="settings-tabs">
+          <button class="tab-btn active" data-tab="pasteTab">Paste Firebase Config</button>
+          <button class="tab-btn" data-tab="manualTab">Manual Fields</button>
+          <button class="tab-btn" data-tab="guideTab">Quick Guide</button>
+        </div>
+
+        <!-- Tab 1: Paste Object / JSON -->
+        <div id="pasteTab" class="settings-tab-panel active">
+          <div class="form-group">
+            <label class="form-label" for="firebaseConfigSnippet">Paste your <code>const firebaseConfig = { ... }</code> snippet:</label>
+            <textarea 
+              id="firebaseConfigSnippet" 
+              class="form-input code-textarea" 
+              placeholder='const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "your-app.firebaseapp.com",
+  projectId: "your-app-id",
+  storageBucket: "your-app.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:12345:web:abcdef"
+};'
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Tab 2: Manual Fields -->
+        <div id="manualTab" class="settings-tab-panel">
+          <div class="form-group">
+            <label class="form-label" for="cfgApiKey">API Key</label>
+            <input type="text" id="cfgApiKey" class="form-input" placeholder="AIzaSy...">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="cfgProjectId">Project ID</label>
+              <input type="text" id="cfgProjectId" class="form-input" placeholder="e.g. my-notes-app">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cfgAuthDomain">Auth Domain</label>
+              <input type="text" id="cfgAuthDomain" class="form-input" placeholder="my-notes-app.firebaseapp.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="cfgStorageBucket">Storage Bucket</label>
+              <input type="text" id="cfgStorageBucket" class="form-input" placeholder="my-notes-app.appspot.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cfgAppId">App ID</label>
+              <input type="text" id="cfgAppId" class="form-input" placeholder="1:123456789:web:abcdef">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Quick Setup Guide -->
+        <div id="guideTab" class="settings-tab-panel">
+          <div style="font-size:0.88rem; color:var(--text-secondary); line-height:1.7;">
+            <p><strong>Step 1:</strong> Go to <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color:var(--accent-primary); text-decoration:underline;">Firebase Console</a> and click <strong>Create a project</strong>.</p>
+            <p><strong>Step 2:</strong> In the left menu, click <strong>Build > Firestore Database</strong>, then click <strong>Create database</strong>. Choose <strong>Start in test mode</strong> (for development access).</p>
+            <p><strong>Step 3:</strong> Go to <strong>Project Settings</strong> (gear icon), scroll down to <strong>Your apps</strong>, click the <strong>Web (&lt;/&gt;)</strong> icon, and copy the <code>firebaseConfig</code> object.</p>
+            <p><strong>Step 4:</strong> Paste it in the <strong>Paste Firebase Config</strong> tab or edit <code>firebase-config.js</code> directly in your code!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" id="useDemoModeBtn" class="btn-secondary" title="Use local browser storage without Firebase">
+          Use Demo / Offline Mode
+        </button>
+        <div style="display:flex; gap:0.6rem;">
+          <button type="button" id="settingsCancelBtn" class="btn-secondary">Close</button>
+          <button type="button" id="saveFirebaseSettingsBtn" class="btn-primary">
+            Save & Connect
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Delete Confirmation Modal ================= -->
+  <div id="deleteModalBackdrop" class="modal-backdrop">
+    <div class="modal-card" style="max-width:440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Note</h3>
+        <button id="deleteModalCloseBtn" class="modal-close-btn" title="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding-bottom: 0.5rem;">
+        <p style="color:var(--text-secondary); font-size:0.95rem;">
+          Are you sure you want to delete <strong id="deleteNoteTitlePreview" style="color:var(--text-primary);">this note</strong>? This action will permanently remove it from the cloud.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cancelDeleteBtn" class="btn-secondary">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn-primary" style="background:var(--danger); box-shadow:none;">
+          Delete Note
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main JavaScript Module -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
